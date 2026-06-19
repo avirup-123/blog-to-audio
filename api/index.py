@@ -796,7 +796,12 @@ def build_html():
     }}
 
     supabaseClient.auth.getSession().then(({{ data }}) => applyAuthState(data.session));
-    supabaseClient.auth.onAuthStateChange((_event, session) => applyAuthState(session));
+    supabaseClient.auth.onAuthStateChange((_event, session) => {{
+        applyAuthState(session);
+        if (_event === 'SIGNED_IN') {{
+            gtag('event', 'sign_in');
+        }}
+    }});
 
     document.getElementById('btn-google-signin').addEventListener('click', () => {{
         supabaseClient.auth.signInWithOAuth({{ provider: 'google' }});
@@ -878,11 +883,13 @@ def build_html():
         document.getElementById('error').classList.remove('show');
     }}
     function showError(msg) {{
+        gtag('event', 'conversion_error', {{ message: msg }});
         const el = document.getElementById('error');
         el.textContent = msg; el.classList.add('show');
         document.getElementById('result').classList.remove('show');
     }}
     function showResult(data) {{
+        gtag('event', 'conversion_success', {{ language: currentLang, voice: document.getElementById('voice-select').value }});
         document.getElementById('error').classList.remove('show');
         document.getElementById('r-source').textContent = data.input_source;
         document.getElementById('r-wc').textContent = data.word_count_cleaned;
