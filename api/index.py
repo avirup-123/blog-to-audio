@@ -511,6 +511,7 @@ def build_html():
       ]
     }}
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -598,6 +599,34 @@ def build_html():
             animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 0.5rem;
         }}
         @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+        .topbar {{
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding: 0 1.5rem; background: #0f172a; border-bottom: 1px solid #1e293b;
+            z-index: 10; display: none;
+        }}
+        .topbar.show {{ display: flex; }}
+        .topbar-user {{ display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #94a3b8; }}
+        .btn-signout {{
+            background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px;
+            padding: 0.4rem 0.85rem; font-size: 0.82rem; cursor: pointer; font-family: inherit;
+        }}
+        .btn-signout:hover {{ background: #253046; }}
+        .signin-screen {{
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 60vh; text-align: center; padding: 2rem;
+        }}
+        .signin-screen.show {{ display: flex; }}
+        .signin-screen h1 {{ font-size: 1.5rem; margin-bottom: 0.5rem; }}
+        .signin-screen p {{ color: #94a3b8; margin-bottom: 1.5rem; }}
+        .btn-google {{
+            display: flex; align-items: center; gap: 0.6rem; background: #fff; color: #1f1f1f;
+            border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-size: 0.95rem;
+            font-weight: 500; cursor: pointer; font-family: inherit;
+        }}
+        .btn-google:hover {{ background: #f1f1f1; }}
+        .app-content {{ display: none; }}
+        .app-content.show {{ display: block; }}
         @media (max-width: 600px) {{
             .hero {{ padding: 6vh 1rem 1.5rem; }}
             .container {{ max-width: 100%; }}
@@ -617,6 +646,18 @@ def build_html():
     </style>
 </head>
 <body>
+    <div class="topbar" id="topbar">
+        <div class="topbar-user">
+            <span id="user-email"></span>
+            <button class="btn-signout" id="btn-signout">Sign out</button>
+        </div>
+    </div>
+    <div class="signin-screen" id="signin-screen">
+        <h1>Text to Audio Online</h1>
+        <p>Sign in with Google to start converting blog posts to audio</p>
+        <button class="btn-google" id="btn-google-signin">Sign in with Google</button>
+    </div>
+    <div class="app-content" id="app-content">
     <div class="hero"><div class="container">
         <h1 id="t-title">Text to Audio</h1>
         <p class="subtitle" id="t-subtitle">Convert text and blog posts into natural-sounding MP3 audio files</p>
@@ -682,8 +723,40 @@ def build_html():
             <div class="faq-item"><button class="faq-q">Will offering audio versions improve accessibility for my readers?</button><div class="faq-a">It does, because not everyone will be comfortable reading through a 1000 or 2000 word article. In such cases the audio file will come to your rescue. And if the visitor sticks around throughout the duration of the audio, it will signal to Google strong retention.</div></div>
             <div class="faq-item"><button class="faq-q">Is there a free version or trial available?</button><div class="faq-a">This is a free version you're looking at.</div></div>
         </div>
-    </div></div>
+    </div></div></div>
     <script>
+    const SUPABASE_URL = '{os.getenv("SUPABASE_URL", "").strip()}';
+    const SUPABASE_ANON_KEY = '{os.getenv("SUPABASE_ANON_KEY", "").strip()}';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentSession = null;
+
+    function applyAuthState(session) {{
+        currentSession = session;
+        const topbar = document.getElementById('topbar');
+        const signinScreen = document.getElementById('signin-screen');
+        const appContent = document.getElementById('app-content');
+        if (session) {{
+            topbar.classList.add('show');
+            signinScreen.classList.remove('show');
+            appContent.classList.add('show');
+            document.getElementById('user-email').textContent = session.user.email;
+        }} else {{
+            topbar.classList.remove('show');
+            signinScreen.classList.add('show');
+            appContent.classList.remove('show');
+        }}
+    }}
+
+    supabaseClient.auth.getSession().then(({{ data }}) => applyAuthState(data.session));
+    supabaseClient.auth.onAuthStateChange((_event, session) => applyAuthState(session));
+
+    document.getElementById('btn-google-signin').addEventListener('click', () => {{
+        supabaseClient.auth.signInWithOAuth({{ provider: 'google' }});
+    }});
+    document.getElementById('btn-signout').addEventListener('click', () => {{
+        supabaseClient.auth.signOut();
+    }});
+
     const LANGS = {lang_json};
     let currentLang = 'en';
 
@@ -793,9 +866,17 @@ def build_html():
         try {{
             const resp = await fetch('/convert', {{
                 method: 'POST',
-                headers: {{ 'Content-Type': 'application/json' }},
+                headers: {{
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + (currentSession ? currentSession.access_token : ''),
+                }},
                 body: JSON.stringify(body),
             }});
+            if (resp.status === 401) {{
+                applyAuthState(null);
+                showError('Please sign in again');
+                return;
+            }}
             const data = await resp.json();
             if (!resp.ok) showError(data.error || 'Something went wrong');
             else showResult(data);
