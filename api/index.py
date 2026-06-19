@@ -29,6 +29,17 @@ def _load_genai():
         genai = _genai
     return genai
 
+supabase_client = None
+
+def _load_supabase():
+    global supabase_client
+    if supabase_client is None:
+        from supabase import create_client
+        url = os.getenv("SUPABASE_URL", "").strip()
+        key = os.getenv("SUPABASE_SERVICE_KEY", "").strip()
+        supabase_client = create_client(url, key)
+    return supabase_client
+
 WORD_COUNT_THRESHOLD = 3000
 CONDENSED_TARGET_WORDS = 2500
 
@@ -356,6 +367,44 @@ def _get_gemini_key():
     if not key:
         raise ValueError("GEMINI_API_KEY not set")
     return key
+
+
+def _verify_supabase_token(auth_header):
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        return None
+    supabase_url = os.getenv("SUPABASE_URL", "").strip()
+    resp = http_requests.get(
+        f"{supabase_url}/auth/v1/user",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "apikey": os.getenv("SUPABASE_ANON_KEY", "").strip(),
+        },
+        timeout=10,
+    )
+    if resp.status_code != 200:
+        return None
+    return resp.json().get("id")
+
+
+def _log_conversion(user_id, input_source, language, voice, word_count_val, condensed, translated, duration):
+    try:
+        client = _load_supabase()
+        client.table("conversions").insert({
+            "user_id": user_id,
+            "input_source": input_source,
+            "source_snippet": input_source[:100],
+            "language": language,
+            "voice": voice,
+            "word_count": word_count_val,
+            "condensed": condensed,
+            "translated": translated,
+            "estimated_duration": duration,
+        }).execute()
+    except Exception:
+        print(f"CONVERSION LOG ERROR: {traceback.format_exc()}", file=sys.stderr, flush=True)
 
 
 def _strip_gemini_artifacts(text):
@@ -813,6 +862,10 @@ Sitemap: https://text-to-audio-online.vercel.app/sitemap.xml
 
 @app.route("/convert", methods=["POST"])
 def convert():
+    user_id = _verify_supabase_token(request.headers.get("Authorization"))
+    if not user_id:
+        return jsonify({"error": "Please sign in again"}), 401
+
     data = request.get_json()
     input_type = data.get("input_type")
     url = data.get("url", "").strip()
@@ -874,9 +927,21 @@ def convert():
             audio_b64 = base64.b64encode(f.read()).decode("utf-8")
         os.unlink(tmp_path)
 
+        input_source = f"URL: {url}" if input_type == "url" else "Pasted text"
+        _log_conversion(
+            user_id=user_id,
+            input_source=input_source,
+            language=lang,
+            voice=voice,
+            word_count_val=final_wc if condensed else wc,
+            condensed=condensed,
+            translated=lang != "en",
+            duration=estimate_duration(final_wc),
+        )
+
         return jsonify({
             "success": True,
-            "input_source": f"URL: {url}" if input_type == "url" else "Pasted text",
+            "input_source": input_source,
             "word_count_cleaned": wc,
             "condensation_applied": condensed,
             "translated": lang != "en",
