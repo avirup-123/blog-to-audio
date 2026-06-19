@@ -577,6 +577,9 @@ def build_html():
             border-radius: 8px; font-size: 0.9rem; display: none;
         }}
         .error-msg.show {{ display: block; }}
+        .history-table {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; }}
+        .history-table th {{ text-align: left; color: #94a3b8; padding: 0.5rem; border-bottom: 1px solid #334155; font-weight: 500; }}
+        .history-table td {{ padding: 0.5rem; border-bottom: 1px solid #1e293b; color: #e2e8f0; }}
         .faq {{ margin-top: 110px; padding-bottom: 2rem; }}
         .faq h2 {{ font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: #818cf8; }}
         .faq-item {{ margin-bottom: 0.5rem; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }}
@@ -664,6 +667,7 @@ def build_html():
         <div class="tabs">
             <button class="tab active" data-tab="url" id="t-tab-url">From URL</button>
             <button class="tab" data-tab="manual" id="t-tab-paste">Paste Text</button>
+            <button class="tab" data-tab="history" id="t-tab-history">History</button>
         </div>
         <div class="row">
             <div class="field">
@@ -692,6 +696,15 @@ def build_html():
                 <input type="text" id="slug-input">
             </div>
             <button class="btn" id="btn-manual">Convert to Audio</button>
+        </div>
+        <div id="panel-history" class="panel">
+            <table class="history-table" id="history-table">
+                <thead>
+                    <tr><th>Date</th><th>Source</th><th>Language</th><th>Voice</th><th>Duration</th></tr>
+                </thead>
+                <tbody id="history-tbody"></tbody>
+            </table>
+            <p id="history-empty" style="display:none; color:#94a3b8; font-size:0.9rem;">No conversions yet.</p>
         </div>
         <div class="error-msg" id="error"></div>
         <div class="result" id="result">
@@ -744,6 +757,28 @@ def build_html():
             topbar.classList.remove('show');
             signinScreen.classList.add('show');
             appContent.classList.remove('show');
+        }}
+    }}
+
+    async function loadHistory() {{
+        if (!currentSession) return;
+        const {{ data, error }} = await supabaseClient
+            .from('conversions')
+            .select('*')
+            .order('created_at', {{ ascending: false }});
+        const tbody = document.getElementById('history-tbody');
+        const empty = document.getElementById('history-empty');
+        tbody.innerHTML = '';
+        if (error || !data || data.length === 0) {{
+            empty.style.display = 'block';
+            return;
+        }}
+        empty.style.display = 'none';
+        for (const row of data) {{
+            const tr = document.createElement('tr');
+            const date = new Date(row.created_at).toLocaleString();
+            tr.innerHTML = '<td>' + date + '</td><td>' + row.source_snippet + '</td><td>' + row.language + '</td><td>' + row.voice + '</td><td>' + row.estimated_duration + '</td>';
+            tbody.appendChild(tr);
         }}
     }}
 
@@ -821,6 +856,7 @@ def build_html():
             tab.classList.add('active');
             document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
             hideResults();
+            if (tab.dataset.tab === 'history') loadHistory();
         }});
     }});
 
@@ -850,6 +886,7 @@ def build_html():
         const dl = document.getElementById('r-download');
         dl.href = audioUrl; dl.download = data.filename;
         document.getElementById('result').classList.add('show');
+        loadHistory();
     }}
     function base64ToBlob(b64, mime) {{
         const bytes = atob(b64);
