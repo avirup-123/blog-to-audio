@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Audio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #1e293b;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-size: 0.95rem;
+        }
+
+        .tab:hover { color: #e2e8f0; }
+        .tab.active { color: #818cf8; border-bottom-color: #818cf8; }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #818cf8;
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .field { margin-bottom: 1rem; }
+
+        .btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: #818cf8;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover { background: #6366f1; }
+        .btn:disabled { background: #475569; cursor: not-allowed; }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: #1e293b;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.show { display: block; }
+
+        .result h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #818cf8;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.35rem 0;
+            font-size: 0.9rem;
+        }
+
+        .result-row span:first-child { color: #94a3b8; }
+
+        .result audio {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 0.75rem;
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .download-link:hover { text-decoration: underline; }
+
+        .error-msg {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background: #7f1d1d;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-msg.show { display: block; }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Audio</h1>
+        <p class="subtitle">Convert any text or blog posts into natural-sounding MP3 audio files</p>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="url">From URL</button>
+            <button class="tab" data-tab="manual">Paste Text</button>
+        </div>
+
+        <div id="panel-url" class="panel active">
+            <div class="field">
+                <label for="url-input">Website URL or blog post</label>
+                <input type="text" id="url-input" placeholder="https://example.com/blog/my-post">
+            </div>
+            <button class="btn" id="btn-url">Convert to Audio</button>
+        </div>
+
+        <div id="panel-manual" class="panel">
+            <div class="field">
+                <label for="text-input">Blog content</label>
+                <textarea id="text-input" placeholder="Paste your blog post content here..."></textarea>
+            </div>
+            <div class="field">
+                <label for="slug-input">Filename slug</label>
+                <input type="text" id="slug-input" placeholder="my-blog-post-title">
+            </div>
+            <button class="btn" id="btn-manual">Convert to Audio</button>
+        </div>
+
+        <div class="error-msg" id="error"></div>
+
+        <div class="result" id="result">
+            <h3>Conversion Complete</h3>
+            <div class="result-row"><span>Source</span><span id="r-source"></span></div>
+            <div class="result-row"><span>Word count</span><span id="r-wc"></span></div>
+            <div class="result-row"><span>Condensed</span><span id="r-condensed"></span></div>
+            <div class="result-row" id="r-condensed-wc-row" style="display:none"><span>Final word count</span><span id="r-condensed-wc"></span></div>
+            <div class="result-row"><span>Duration</span><span id="r-duration"></span></div>
+            <audio id="r-audio" controls></audio>
+            <a class="download-link" id="r-download" href="#" download>Download MP3</a>
+        </div>
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+                hideResults();
+            });
+        });
+
+        function hideResults() {
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('error');
+            el.textContent = msg;
+            el.classList.add('show');
+            document.getElementById('result').classList.remove('show');
+        }
+
+        function showResult(data) {
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('r-source').textContent = data.input_source;
+            document.getElementById('r-wc').textContent = data.word_count_cleaned;
+            document.getElementById('r-condensed').textContent = data.condensation_applied ? 'Yes' : 'No';
+            const cwcRow = document.getElementById('r-condensed-wc-row');
+            if (data.condensation_applied) {
+                cwcRow.style.display = 'flex';
+                document.getElementById('r-condensed-wc').textContent = data.word_count_final;
+            } else {
+                cwcRow.style.display = 'none';
+            }
+            document.getElementById('r-duration').textContent = data.estimated_duration;
+            document.getElementById('r-audio').src = data.download_url;
+            document.getElementById('r-download').href = data.download_url;
+            document.getElementById('result').classList.add('show');
+        }
+
+        async function convert(body, btn) {
+            hideResults();
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Converting...';
+
+            try {
+                const resp = await fetch('/convert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await resp.json();
+                if (!resp.ok) {
+                    showError(data.error || 'Something went wrong');
+                } else {
+                    showResult(data);
+                }
+            } catch (e) {
+                showError('Network error: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        document.getElementById('btn-url').addEventListener('click', () => {
+            const url = document.getElementById('url-input').value.trim();
+            if (!url) return showError('Please enter a URL');
+            convert({ input_type: 'url', url }, document.getElementById('btn-url'));
+        });
+
+        document.getElementById('btn-manual').addEventListener('click', () => {
+            const text = document.getElementById('text-input').value.trim();
+            const slug = document.getElementById('slug-input').value.trim();
+            if (!text) return showError('Please paste your blog content');
+            if (!slug) return showError('Please enter a filename slug');
+            convert({ input_type: 'manual', text, slug }, document.getElementById('btn-manual'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Text to Audio</h1>
+  <p class="subtitle">Convert text and blog posts into natural-sounding MP3 audio files</p>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="url" onclick="switchTab('url')">From URL</button>
+    <button class="tab" data-tab="manual" onclick="switchTab('manual')">Paste Text</button>
+  </div>
+
+  <div id="panel-url" class="panel active">
+    <div class="field">
+      <label>Page URL</label>
+      <input type="text" id="url-input" value="https://example.com/blog/how-to-get-a-trade-license" readonly>
+    </div>
+    <button class="btn" id="btn-url">Convert to Audio</button>
+  </div>
+
+  <div id="panel-manual" class="panel">
+    <div class="field">
+      <label>Blog content</label>
+      <textarea id="text-input" placeholder="Paste your blog post content here..."></textarea>
+    </div>
+    <div class="field">
+      <label>Filename slug</label>
+      <input type="text" id="slug-input" placeholder="my-blog-post-title">
+    </div>
+    <button class="btn" id="btn-manual">Convert to Audio</button>
+  </div>
+
+  <script>
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+      document.getElementById('panel-' + name).classList.add('active');
+    }
+  </script>
+</body>
+</html>

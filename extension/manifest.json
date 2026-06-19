@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Text to Audio",
+  "version": "1.0.0",
+  "description": "Convert text and blog posts into natural-sounding MP3 audio files",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "offscreen",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "https://huggingface.co/*",
+    "https://cdn-lfs-us-1.hf.co/*",
+    "https://cdn-lfs.hf.co/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["lib/*.wasm"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Extension Preview</title>
+  <style>
+    body {
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    .frame {
+      border: 1px solid #334155;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    iframe {
+      width: 420px;
+      height: 520px;
+      border: none;
+      display: block;
+    }
+    .label {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="frame">
+      <iframe src="popup-preview.html"></iframe>
+    </div>
+    <div class="label">Chrome Extension Popup Preview</div>
+  </div>
+</body>
+</html>

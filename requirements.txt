@@ -1,0 +1,6 @@
+flask
+requests
+beautifulsoup4
+google-genai
+edge-tts
+python-dotenv

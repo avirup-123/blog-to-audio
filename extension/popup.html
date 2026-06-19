@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Text to Audio</h1>
+  <p class="subtitle">Convert text and blog posts into natural-sounding MP3 audio files</p>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="url">From URL</button>
+    <button class="tab" data-tab="manual">Paste Text</button>
+  </div>
+
+  <div id="panel-url" class="panel active">
+    <div class="field">
+      <label>Page URL</label>
+      <input type="text" id="url-input" readonly>
+    </div>
+    <button class="btn" id="btn-url">Convert to Audio</button>
+  </div>
+
+  <div id="panel-manual" class="panel">
+    <div class="field">
+      <label>Blog content</label>
+      <textarea id="text-input" placeholder="Paste your blog post content here..."></textarea>
+    </div>
+    <div class="field">
+      <label>Filename slug</label>
+      <input type="text" id="slug-input" placeholder="my-blog-post-title">
+    </div>
+    <button class="btn" id="btn-manual">Convert to Audio</button>
+  </div>
+
+  <div class="status" id="status">
+    <div class="status-text" id="status-text">Initializing...</div>
+    <div class="status-bar"><div class="status-bar-fill"></div></div>
+  </div>
+
+  <div class="error-msg" id="error"></div>
+
+  <div class="result" id="result">
+    <h3>Conversion Complete</h3>
+    <div class="result-row"><span>Source</span><span id="r-source"></span></div>
+    <div class="result-row"><span>Word count</span><span id="r-wc"></span></div>
+    <div class="result-row"><span>Condensed</span><span id="r-condensed"></span></div>
+    <div class="result-row"><span>Duration</span><span id="r-duration"></span></div>
+    <button class="btn-download" id="btn-download">Download MP3</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
