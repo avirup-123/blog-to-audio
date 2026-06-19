@@ -777,7 +777,12 @@ def build_html():
         for (const row of data) {{
             const tr = document.createElement('tr');
             const date = new Date(row.created_at).toLocaleString();
-            tr.innerHTML = '<td>' + date + '</td><td>' + row.source_snippet + '</td><td>' + row.language + '</td><td>' + row.voice + '</td><td>' + row.estimated_duration + '</td>';
+            const cells = [date, row.source_snippet, row.language, row.voice, row.estimated_duration];
+            for (const text of cells) {{
+                const td = document.createElement('td');
+                td.textContent = text;
+                tr.appendChild(td);
+            }}
             tbody.appendChild(tr);
         }}
     }}
