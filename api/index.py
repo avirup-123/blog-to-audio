@@ -480,6 +480,7 @@ def build_html():
     <meta name="description" content="Convert any blog post or text into natural-sounding MP3 audio for free. Paste a URL or text, pick from 60+ AI voices in 19 languages, and download your audio instantly. No signup required.">
     <meta name="keywords" content="text to audio, blog to audio, text to speech, TTS, MP3 converter, AI voice, free text to speech, blog post to podcast, multilingual TTS, convert blog to audio">
     <meta name="robots" content="index, follow">
+    <meta name="google-site-verification" content="oA67qNSCSvFVF177lFk0pxZrZPRoSJjAWC-7uoIUHaE" />
     <link rel="canonical" href="https://text-to-audio-online.vercel.app/">
     <meta property="og:title" content="Text to Audio Online - Free Blog to MP3 Converter">
     <meta property="og:description" content="Convert any blog post or text into natural-sounding MP3 audio for free. 60+ AI voices, 19 languages. No signup required.">
@@ -488,6 +489,13 @@ def build_html():
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Text to Audio Online - Free Blog to MP3 Converter">
     <meta name="twitter:description" content="Convert any blog post or text into natural-sounding MP3 audio for free. 60+ AI voices, 19 languages.">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7SJW1JQCM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-R7SJW1JQCM');
+    </script>
     <script type="application/ld+json">
     {{
       "@context": "https://schema.org",
