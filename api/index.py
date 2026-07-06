@@ -7,6 +7,7 @@ import re
 import sys
 import tempfile
 import traceback
+from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify, Response
@@ -1004,6 +1005,27 @@ def convert():
     if not user_id:
         return jsonify({"error": "Please sign in again"}), 401
 
+    DAILY_LIMIT = 10
+    today_start = datetime.now(timezone.utc).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    ).isoformat()
+    client = _load_supabase()
+    count_resp = (
+        client.table("conversions")
+        .select("id", count="exact")
+        .eq("user_id", user_id)
+        .gte("created_at", today_start)
+        .execute()
+    )
+    used_today = count_resp.count or 0
+    if used_today >= DAILY_LIMIT:
+        return jsonify({
+            "error": "You've used all 10 free conversions today.",
+            "daily_limit_reached": True,
+            "used": used_today,
+            "limit": DAILY_LIMIT,
+        }), 429
+
     data = request.get_json()
     input_type = data.get("input_type")
     url = data.get("url", "").strip()
@@ -1087,6 +1109,8 @@ def convert():
             "estimated_duration": estimate_duration(final_wc),
             "filename": f"{file_slug}.mp3",
             "audio_base64": audio_b64,
+            "conversions_used_today": used_today + 1,
+            "daily_limit": DAILY_LIMIT,
         })
     except Exception as e:
         print(f"CONVERT ERROR: {traceback.format_exc()}", file=sys.stderr, flush=True)
