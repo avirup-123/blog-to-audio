@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "extension-preview",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "extension"],
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "blog-to-audio-extension", "-l", "8765"],
       "port": 8765
     }
   ]
