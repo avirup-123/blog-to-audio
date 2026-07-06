@@ -93,9 +93,6 @@ document.getElementById('tabText').addEventListener('click', () => switchTab('te
 document.getElementById('btnUrl').addEventListener('click', convertUrl);
 document.getElementById('btnText').addEventListener('click', convertText);
 
-// Feedback
-document.getElementById('btnFeedback').addEventListener('click', sendFeedback);
-
 // Char counter
 document.getElementById('pasteText').addEventListener('input', () => {
   document.getElementById('charCount').textContent = document.getElementById('pasteText').value.length;
@@ -117,16 +114,10 @@ async function convertUrl() {
   document.getElementById('resultUrl').classList.remove('show');
 
   try {
-    const fetchRes = await fetch(`${API}/api/fetch-url`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
-    });
-    const fetchData = await fetchRes.json();
-    if (!fetchRes.ok) throw new Error(fetchData.error || 'Failed to fetch URL');
-    await doConvert(fetchData.text, 'Url');
+    await doConvert({ input_type: 'url', url, lang: 'en' }, 'Url');
   } catch (err) {
     if (!String(err).includes('ort-wasm')) showError('errorUrl', err.message);
+  } finally {
     setLoading('Url', false);
   }
 }
@@ -141,57 +132,49 @@ async function convertText() {
   document.getElementById('resultText').classList.remove('show');
 
   try {
-    await doConvert(text, 'Text');
+    const slug = 'extension-' + Date.now();
+    await doConvert({ input_type: 'manual', text, slug, lang: 'en' }, 'Text');
   } catch (err) {
     if (!String(err).includes('ort-wasm')) showError('errorText', err.message);
+  } finally {
     setLoading('Text', false);
   }
 }
 
-async function doConvert(text, suffix) {
-  const res = await fetch(`${API}/api/convert`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, language: 'en' })
-  });
-
-  if (!res.ok) {
-    const d = await res.json();
-    throw new Error(d.error || 'Conversion failed');
+async function doConvert(body, suffix) {
+  const token = await getValidAccessToken();
+  if (!token) {
+    showSignedOutState();
+    throw new Error('Please sign in again');
   }
 
-  const blob = await res.blob();
-  const dataUrl = await new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
+  const res = await fetch(`${API}/convert`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify(body),
   });
 
-  document.getElementById(`audio${suffix}`).src = dataUrl;
-  const dl = document.getElementById(`dl${suffix}`);
-  dl.href = dataUrl;
-  dl.download = 'audio.mp3';
-  document.getElementById(`result${suffix}`).classList.add('show');
-  setLoading(suffix, false);
-}
+  if (res.status === 401) {
+    showSignedOutState();
+    throw new Error('Please sign in again');
+  }
 
-async function sendFeedback() {
-  const message = document.getElementById('feedbackText').value.trim();
-  if (!message) return;
-  const btn = document.getElementById('btnFeedback');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-  try {
-    await fetch(`${API}/api/feedback`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
-    });
-    document.getElementById('feedbackText').value = '';
-    document.getElementById('feedbackOk').classList.add('show');
-    setTimeout(() => document.getElementById('feedbackOk').classList.remove('show'), 3000);
-  } catch (e) { }
-  finally { btn.disabled = false; btn.textContent = 'Send Feedback'; }
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Conversion failed');
+  }
+
+  const byteChars = atob(data.audio_base64);
+  const byteNumbers = new Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+  const blob = new Blob([new Uint8Array(byteNumbers)], { type: 'audio/mpeg' });
+  const audioUrl = URL.createObjectURL(blob);
+
+  document.getElementById(`audio${suffix}`).src = audioUrl;
+  const dl = document.getElementById(`dl${suffix}`);
+  dl.href = audioUrl;
+  dl.download = data.filename || 'audio.mp3';
+  document.getElementById(`result${suffix}`).classList.add('show');
 }
 
 function setLoading(suffix, loading) {
