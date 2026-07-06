@@ -809,6 +809,12 @@ def build_html():
             expires_at: session.expires_at,
             email: session.user.email,
         }}, () => {{
+            if (chrome.runtime.lastError) {{
+                document.body.innerHTML = '<div style="padding:4rem 2rem; text-align:center; color:#e2e8f0;">' +
+                    '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Couldn\'t reach the extension</h1>' +
+                    '<p style="color:#94a3b8;">Make sure it\'s installed, then try signing in again.</p></div>';
+                return;
+            }}
             document.body.innerHTML = '<div style="padding:4rem 2rem; text-align:center; color:#e2e8f0;">' +
                 '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Signed in!</h1>' +
                 '<p style="color:#94a3b8;">You can close this tab and return to the extension.</p></div>';
