@@ -796,11 +796,35 @@ def build_html():
         }}
     }}
 
-    supabaseClient.auth.getSession().then(({{ data }}) => applyAuthState(data.session));
+    const EXTENSION_ID = 'igbfikahohclddjfekikdhofobpadoek';
+
+    function maybeSendSessionToExtension(session) {{
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('ext_signin') !== '1' || !session) return;
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
+        chrome.runtime.sendMessage(EXTENSION_ID, {{
+            type: 'AUTH_SESSION',
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+            expires_at: session.expires_at,
+            email: session.user.email,
+        }}, () => {{
+            document.body.innerHTML = '<div style="padding:4rem 2rem; text-align:center; color:#e2e8f0;">' +
+                '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Signed in!</h1>' +
+                '<p style="color:#94a3b8;">You can close this tab and return to the extension.</p></div>';
+            setTimeout(() => window.close(), 2000);
+        }});
+    }}
+
+    supabaseClient.auth.getSession().then(({{ data }}) => {{
+        applyAuthState(data.session);
+        maybeSendSessionToExtension(data.session);
+    }});
     supabaseClient.auth.onAuthStateChange((_event, session) => {{
         applyAuthState(session);
         if (_event === 'SIGNED_IN') {{
             gtag('event', 'sign_in');
+            maybeSendSessionToExtension(session);
         }}
     }});
 
