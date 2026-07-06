@@ -130,7 +130,16 @@
     <p>Convert any blog to audio instantly</p>
   </div>
 
-  <div class="body">
+  <div class="body" id="signinScreen" style="display:none; text-align:center; padding-top: 30px;">
+    <p style="color:#94a3b8; font-size:0.85em; margin-bottom:14px;">Sign in to convert blogs to audio.</p>
+    <button class="btn-convert" id="btnSignIn" style="width:auto; padding: 10px 20px;">Sign in with Google</button>
+  </div>
+
+  <div class="body" id="appContent" style="display:none;">
+    <div class="topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <span id="userEmail" style="font-size:0.72em; color:#94a3b8;"></span>
+      <button id="btnSignOut" style="background:none; border:none; color:#818cf8; font-size:0.72em; cursor:pointer; font-family:inherit;">Sign out</button>
+    </div>
     <div class="tabs">
       <button class="tab active" id="tabUrl">🔗 Blog URL</button>
       <button class="tab" id="tabText">📝 Paste Text</button>
@@ -171,11 +180,6 @@
       </div>
     </div>
 
-    <hr>
-    <div class="feedback-label">💬 Share Feedback</div>
-    <textarea class="feedback-box" id="feedbackText" placeholder="How was your experience?"></textarea>
-    <button class="btn-feedback" id="btnFeedback">Send Feedback</button>
-    <div class="feedback-ok" id="feedbackOk">✅ Thanks for your feedback!</div>
   </div>
 
   <div class="footer">text-to-audio-online.vercel.app</div>
