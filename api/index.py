@@ -1009,15 +1009,21 @@ def convert():
     today_start = datetime.now(timezone.utc).replace(
         hour=0, minute=0, second=0, microsecond=0
     ).isoformat()
-    client = _load_supabase()
-    count_resp = (
-        client.table("conversions")
-        .select("id", count="exact")
-        .eq("user_id", user_id)
-        .gte("created_at", today_start)
-        .execute()
-    )
-    used_today = count_resp.count or 0
+    used_today = 0
+    try:
+        client = _load_supabase()
+        count_resp = (
+            client.table("conversions")
+            .select("id", count="exact")
+            .eq("user_id", user_id)
+            .gte("created_at", today_start)
+            .execute()
+        )
+        used_today = count_resp.count or 0
+    except Exception:
+        print(f"QUOTA CHECK ERROR: {traceback.format_exc()}", file=sys.stderr, flush=True)
+        used_today = 0
+
     if used_today >= DAILY_LIMIT:
         return jsonify({
             "error": "You've used all 10 free conversions today.",
