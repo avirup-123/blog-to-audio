@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Text to Audio Online",
+  "version": "1.0",
+  "description": "Convert any blog or article into audio instantly. Paste a URL or text and get an MP3 in seconds.",
+  "permissions": ["activeTab", "tabs"],
+  "host_permissions": [
+    "https://text-to-audio-online.vercel.app/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
