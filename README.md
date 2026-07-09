@@ -27,7 +27,7 @@ Paste a URL or raw text, pick a voice and language, and download the audio in se
 
 The Chrome extension brings the same conversion capability directly into your browser toolbar.
 
-**Install:** [Text to Audio Online](https://chromewebstore.google.com/detail/text-to-audio-online/dmomnogiakppmhhfdefoigmopahihmhn)
+**Install:** [Text to Audio converter online chrome extension](https://chromewebstore.google.com/detail/text-to-audio-online/dmomnogiakppmhhfdefoigmopahihmhn)
 
 ### Extension Features
 
