@@ -4,9 +4,9 @@ Convert any blog post, article, or text into a natural-sounding MP3 audio file â
 
 Paste a URL or raw text, pick a voice and language, and download the audio in seconds. Powered by Google Gemini 2.0 Flash for intelligent content extraction and Microsoft Edge TTS for 60+ natural voices across 19 languages.
 
-**Website:** [text-to-audio-online.vercel.app](https://text-to-audio-online.vercel.app)
-**Chrome Extension:** [Chrome Web Store](https://chromewebstore.google.com/detail/text-to-audio-online/dmomnogiakppmhhfdefoigmopahihmhn)
-**Privacy Policy:** [text-to-audio-online.vercel.app/privacy](https://text-to-audio-online.vercel.app/privacy)
+[![Website](https://img.shields.io/badge/Website-text--to--audio--online.vercel.app-4f46e5?style=flat-square&logo=vercel)](https://text-to-audio-online.vercel.app)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Extension-Install_Free-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/text-to-audio-online/dmomnogiakppmhhfdefoigmopahihmhn)
+[![Privacy Policy](https://img.shields.io/badge/Privacy_Policy-View-gray?style=flat-square)](https://text-to-audio-online.vercel.app/privacy)
 
 ---
 
