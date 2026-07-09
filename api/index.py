@@ -508,15 +508,17 @@ def build_html():
         {{"@type": "Question", "name": "Can I convert multiple blog posts at once or just one at a time?", "acceptedAnswer": {{"@type": "Answer", "text": "No, this feature is not available yet, but we are in the process of adding this. It will be live sooner or later."}}}},
         {{"@type": "Question", "name": "Do I need to copy-paste my content or can I just paste the URL?", "acceptedAnswer": {{"@type": "Answer", "text": "You have both the options. You can paste your blog URL. If you feel the blog URL is not giving you the desired output, you have the option to paste the content itself. This will take 1-2 minutes extra, but the results will be better."}}}},
         {{"@type": "Question", "name": "What audio file formats can I download (MP3, WAV, M4A)?", "acceptedAnswer": {{"@type": "Answer", "text": "You can download the audio files in only MP3 format."}}}},
-        {{"@type": "Question", "name": "How many AI voices and languages are available?", "acceptedAnswer": {{"@type": "Answer", "text": "There are multiple languages covered, and we are adding more voices to it."}}}},
-        {{"@type": "Question", "name": "Can I customize the voice speed, pitch, and emotion?", "acceptedAnswer": {{"@type": "Answer", "text": "You can customise the voice speed only. The audio will by default have the pitch and emotion. Different voices will have different pitch and emotion."}}}},
+        {{"@type": "Question", "name": "How many AI voices and languages are available?", "acceptedAnswer": {{"@type": "Answer", "text": "The website offers 60+ AI voices across 19 languages. The Chrome extension currently supports 3 English voices. We are actively adding more."}}}},
+        {{"@type": "Question", "name": "Can I customize the voice speed, pitch, and emotion?", "acceptedAnswer": {{"@type": "Answer", "text": "Each voice has its own natural pitch and emotion built in. Different voices will sound different, so try a few and pick the one that fits your content best."}}}},
         {{"@type": "Question", "name": "Is the audio quality good enough for podcasting?", "acceptedAnswer": {{"@type": "Answer", "text": "It is good enough based on the opinion of most people who have used it so far. But you should certainly use your due diligence. Give it a shot, you have many voices to experiment with, whichever you like the most, you can download it."}}}},
         {{"@type": "Question", "name": "Can I embed the audio player directly on my blog post?", "acceptedAnswer": {{"@type": "Answer", "text": "Not the audio player, but the audio file you can definitely post on your blog post."}}}},
         {{"@type": "Question", "name": "Can I download the audio file or just play it online?", "acceptedAnswer": {{"@type": "Answer", "text": "You can play the audio online and also download the MP3 file."}}}},
         {{"@type": "Question", "name": "Does converting blogs to audio help with SEO?", "acceptedAnswer": {{"@type": "Answer", "text": "Yeah, it does. One of the key factors for ranking well is having your content involve a multi-modal approach. This means don't stick to text-based content alone, incorporate images, videos, tools (if you can) and audio happens to be one of the ways to incorporate a multimodal approach. And let's not forget voice search is growing every week."}}}},
         {{"@type": "Question", "name": "Can I publish the audio to Spotify and Apple Podcasts automatically?", "acceptedAnswer": {{"@type": "Answer", "text": "Not automatically. This text-to-voice software will only convert your text content into an audio file. You can download it and then publish it on the desired platforms."}}}},
         {{"@type": "Question", "name": "Will offering audio versions improve accessibility for my readers?", "acceptedAnswer": {{"@type": "Answer", "text": "It does, because not everyone will be comfortable reading through a 1000 or 2000 word article. In such cases the audio file will come to your rescue. And if the visitor sticks around throughout the duration of the audio, it will signal to Google strong retention."}}}},
-        {{"@type": "Question", "name": "Is there a free version or trial available?", "acceptedAnswer": {{"@type": "Answer", "text": "This is a free version you're looking at."}}}}
+        {{"@type": "Question", "name": "Is there a free version or trial available?", "acceptedAnswer": {{"@type": "Answer", "text": "Yes. You get 10 free conversions per day after signing in with Google. This limit is shared across the website and the Chrome extension."}}}},
+        {{"@type": "Question", "name": "Is there a Chrome extension?", "acceptedAnswer": {{"@type": "Answer", "text": "Yes. Install the Text to Audio Online Chrome extension to convert any blog post to audio right from your browser toolbar. Sign in once with Google and it shares your account with the website."}}}},
+        {{"@type": "Question", "name": "Do I need to sign in to use this?", "acceptedAnswer": {{"@type": "Answer", "text": "Yes, a free Google sign-in is required on both the website and the Chrome extension. This lets us track your daily usage and keep your conversion history."}}}}
       ]
     }}
     </script>
@@ -735,15 +737,17 @@ def build_html():
             <div class="faq-item"><button class="faq-q">Can I convert multiple blog posts at once or just one at a time?</button><div class="faq-a">No, this feature is not available yet, but we are in the process of adding this. It will be live sooner or later.</div></div>
             <div class="faq-item"><button class="faq-q">Do I need to copy-paste my content or can I just paste the URL?</button><div class="faq-a">You have both the options. You can paste your blog URL. If you feel the blog URL is not giving you the desired output, you have the option to paste the content itself. This will take 1-2 minutes extra, but the results will be better.</div></div>
             <div class="faq-item"><button class="faq-q">What audio file formats can I download (MP3, WAV, M4A)?</button><div class="faq-a">You can download the audio files in only MP3 format.</div></div>
-            <div class="faq-item"><button class="faq-q">How many AI voices and languages are available?</button><div class="faq-a">There are multiple languages covered, and we are adding more voices to it.</div></div>
-            <div class="faq-item"><button class="faq-q">Can I customize the voice speed, pitch, and emotion?</button><div class="faq-a">You can customise the voice speed only. The audio will by default have the pitch and emotion. Different voices will have different pitch and emotion.</div></div>
+            <div class="faq-item"><button class="faq-q">How many AI voices and languages are available?</button><div class="faq-a">The website offers 60+ AI voices across 19 languages. The Chrome extension currently supports 3 English voices. We are actively adding more.</div></div>
+            <div class="faq-item"><button class="faq-q">Can I customize the voice speed, pitch, and emotion?</button><div class="faq-a">Each voice has its own natural pitch and emotion built in. Different voices will sound different, so try a few and pick the one that fits your content best.</div></div>
             <div class="faq-item"><button class="faq-q">Is the audio quality good enough for podcasting?</button><div class="faq-a">It is good enough based on the opinion of most people who have used it so far. But you should certainly use your due diligence. Give it a shot, you have many voices to experiment with, whichever you like the most, you can download it.</div></div>
             <div class="faq-item"><button class="faq-q">Can I embed the audio player directly on my blog post?</button><div class="faq-a">Not the audio player, but the audio file you can definitely post on your blog post.</div></div>
             <div class="faq-item"><button class="faq-q">Can I download the audio file or just play it online?</button><div class="faq-a">You can play the audio online and also download the MP3 file.</div></div>
             <div class="faq-item"><button class="faq-q">Does converting blogs to audio help with SEO?</button><div class="faq-a">Yeah, it does. One of the key factors for ranking well is having your content involve a multi-modal approach. This means don't stick to text-based content alone, incorporate images, videos, tools (if you can) and audio happens to be one of the ways to incorporate a multimodal approach. And let's not forget voice search is growing every week.</div></div>
             <div class="faq-item"><button class="faq-q">Can I publish the audio to Spotify and Apple Podcasts automatically?</button><div class="faq-a">Not automatically. This text-to-voice software will only convert your text content into an audio file. You can download it and then publish it on the desired platforms.</div></div>
             <div class="faq-item"><button class="faq-q">Will offering audio versions improve accessibility for my readers?</button><div class="faq-a">It does, because not everyone will be comfortable reading through a 1000 or 2000 word article. In such cases the audio file will come to your rescue. And if the visitor sticks around throughout the duration of the audio, it will signal to Google strong retention.</div></div>
-            <div class="faq-item"><button class="faq-q">Is there a free version or trial available?</button><div class="faq-a">This is a free version you're looking at.</div></div>
+            <div class="faq-item"><button class="faq-q">Is there a free version or trial available?</button><div class="faq-a">Yes. You get 10 free conversions per day after signing in with Google. This limit is shared across the website and the Chrome extension.</div></div>
+            <div class="faq-item"><button class="faq-q">Is there a Chrome extension?</button><div class="faq-a">Yes. Install the Text to Audio Online Chrome extension to convert any blog post to audio right from your browser toolbar. Sign in once with Google and it shares your account with the website.</div></div>
+            <div class="faq-item"><button class="faq-q">Do I need to sign in to use this?</button><div class="faq-a">Yes, a free Google sign-in is required on both the website and the Chrome extension. This lets us track your daily usage and keep your conversion history.</div></div>
         </div>
     </div></div></div>
     <script>
@@ -796,30 +800,40 @@ def build_html():
         }}
     }}
 
-    const EXTENSION_ID = 'igbfikahohclddjfekikdhofobpadoek';
+    const EXTENSION_ID = 'dmomnogiakppmhhfdefoigmopahihmhn';
 
     function maybeSendSessionToExtension(session) {{
         const params = new URLSearchParams(window.location.search);
         if (params.get('ext_signin') !== '1' || !session) return;
-        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
-        chrome.runtime.sendMessage(EXTENSION_ID, {{
-            type: 'AUTH_SESSION',
+
+        const payload = {{
             access_token: session.access_token,
             refresh_token: session.refresh_token,
             expires_at: session.expires_at,
             email: session.user.email,
-        }}, () => {{
-            if (chrome.runtime.lastError) {{
+        }};
+
+        window.postMessage({{ type: 'AUTH_SESSION_FOR_EXTENSION', ...payload }}, window.location.origin);
+
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {{
+            chrome.runtime.sendMessage(EXTENSION_ID, {{ type: 'AUTH_SESSION', ...payload }}, () => {{
+                if (chrome.runtime.lastError) {{
+                    document.body.innerHTML = '<div style="padding:4rem 2rem; text-align:center; color:#e2e8f0;">' +
+                        '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Could not reach the extension</h1>' +
+                        '<p style="color:#94a3b8;">Make sure it is installed, then try signing in again.</p></div>';
+                    return;
+                }}
                 document.body.innerHTML = '<div style="padding:4rem 2rem; text-align:center; color:#e2e8f0;">' +
-                    '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Couldn\'t reach the extension</h1>' +
-                    '<p style="color:#94a3b8;">Make sure it\'s installed, then try signing in again.</p></div>';
-                return;
-            }}
+                    '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Signed in!</h1>' +
+                    '<p style="color:#94a3b8;">You can close this tab and return to the extension.</p></div>';
+                setTimeout(() => window.close(), 2000);
+            }});
+        }} else {{
             document.body.innerHTML = '<div style="padding:4rem 2rem; text-align:center; color:#e2e8f0;">' +
                 '<h1 style="font-size:1.3rem; margin-bottom:0.5rem;">Signed in!</h1>' +
                 '<p style="color:#94a3b8;">You can close this tab and return to the extension.</p></div>';
             setTimeout(() => window.close(), 2000);
-        }});
+        }}
     }}
 
     supabaseClient.auth.getSession().then(({{ data }}) => {{
@@ -835,7 +849,8 @@ def build_html():
     }});
 
     document.getElementById('btn-google-signin').addEventListener('click', () => {{
-        supabaseClient.auth.signInWithOAuth({{ provider: 'google' }});
+        const redir = window.location.origin + window.location.pathname + window.location.search;
+        supabaseClient.auth.signInWithOAuth({{ provider: 'google', options: {{ redirectTo: redir }} }});
     }});
     document.getElementById('btn-signout').addEventListener('click', () => {{
         supabaseClient.auth.signOut();
@@ -1027,6 +1042,56 @@ Allow: /
 Sitemap: https://text-to-audio-online.vercel.app/sitemap.xml
 '''
     return Response(txt, content_type="text/plain; charset=utf-8")
+
+
+@app.route("/privacy")
+def privacy():
+    html = '''<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - Text to Audio Online</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; line-height: 1.7; }
+h1 { color: #818cf8; font-size: 1.5rem; margin-bottom: 0.5rem; }
+h2 { color: #818cf8; font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; }
+p, li { color: #cbd5e1; font-size: 0.95rem; }
+ul { padding-left: 1.5rem; }
+a { color: #818cf8; }
+.updated { color: #64748b; font-size: 0.85rem; margin-bottom: 2rem; }
+</style>
+</head><body>
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated: July 6, 2026</p>
+
+<p>Text to Audio Online ("we", "our", "us") operates the website at text-to-audio-online.vercel.app and the Text to Audio Online Chrome extension. This policy explains what data we collect and how we use it.</p>
+
+<h2>Data We Collect</h2>
+<ul>
+<li><strong>Google account email</strong> — collected when you sign in with Google. Used to identify your account and enforce daily usage limits.</li>
+<li><strong>Blog URLs and text you submit</strong> — sent to our server for text-to-speech conversion. We do not store the content of your blog posts after conversion is complete.</li>
+<li><strong>Conversion metadata</strong> — we log the date, language, voice used, and word count of each conversion to track daily usage limits. We do not store the audio files on our servers.</li>
+</ul>
+
+<h2>Chrome Extension</h2>
+<p>The Chrome extension stores your authentication session (access token, refresh token, email) locally on your device using Chrome's storage API. This data never leaves your device except to authenticate with our server. The extension reads the active tab's URL only to pre-fill the input field — it does not access page content or browsing history.</p>
+
+<h2>Third-Party Services</h2>
+<ul>
+<li><strong>Google OAuth</strong> — for sign-in. Subject to <a href="https://policies.google.com/privacy">Google's Privacy Policy</a>.</li>
+<li><strong>Supabase</strong> — for authentication and database. Subject to <a href="https://supabase.com/privacy">Supabase's Privacy Policy</a>.</li>
+<li><strong>Google Analytics</strong> — for anonymous usage analytics. No personally identifiable information is sent.</li>
+</ul>
+
+<h2>Data Sharing</h2>
+<p>We do not sell, trade, or share your personal data with third parties. Data is only shared with the service providers listed above as necessary to operate the service.</p>
+
+<h2>Data Retention</h2>
+<p>Conversion metadata is retained indefinitely to support usage history. You can request deletion of your data by emailing us.</p>
+
+<h2>Contact</h2>
+<p>For questions about this privacy policy, contact us at <a href="mailto:avirupsarker1999@gmail.com">avirupsarker1999@gmail.com</a>.</p>
+</body></html>'''
+    return Response(html, content_type="text/html; charset=utf-8")
 
 
 @app.route("/convert", methods=["POST"])

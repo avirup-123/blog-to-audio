@@ -1,6 +1,5 @@
 {
   "manifest_version": 3,
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6v/Ho9EscLoA794dMJiLUIjuLdU5ie1IbMTndRGcw8zHIkrRZI89Ii5UhporuPCeF/uM8lA/GXak6doChIHApa9E+1eafnrXPYHjbd/8YhjGYkYzwiiQg7nT+uBcmSqZERWY0VeW41Q1gJ38QatMSEPkBGF1sWsziYS5IMrX4FeAXRQMBC21l6cADLbOFW8zVx0aNKqE0TmdThq5hhVMRxHrIhrA/Ozig50FEA3FcneGKtshswYpaYMjSsd+dyZYReUwL5NRO+bZjfs2TEPvez0kYeTZ6NXqf7KFBkzPqMR//9tPNchC4yvN1GJcTMSe6kCIC8HKm4FmPI059IZW/wIDAQAB",
   "name": "Text to Audio Online",
   "version": "1.0",
   "description": "Convert any blog or article into audio instantly. Paste a URL or text and get an MP3 in seconds.",

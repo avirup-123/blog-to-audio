@@ -18,7 +18,7 @@ function showSignedInState(email) {
 
 function getStoredSession() {
   return new Promise((resolve) => {
-    chrome.storage.local.get('authSession', (result) => resolve(result.authSession || null));
+    browser.storage.local.get('authSession', (result) => resolve(result.authSession || null));
   });
 }
 
@@ -43,10 +43,10 @@ async function getValidAccessToken() {
       expires_at: nowSeconds + refreshed.expires_in,
       email: session.email,
     };
-    await new Promise((resolve) => chrome.storage.local.set({ authSession: newSession }, resolve));
+    await new Promise((resolve) => browser.storage.local.set({ authSession: newSession }, resolve));
     return newSession.access_token;
   } catch (e) {
-    await new Promise((resolve) => chrome.storage.local.remove('authSession', resolve));
+    await new Promise((resolve) => browser.storage.local.remove('authSession', resolve));
     return null;
   }
 }
@@ -66,7 +66,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     showSignedOutState();
   }
 
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs && tabs[0] && tabs[0].url && tabs[0].url.startsWith('http')) {
       document.getElementById('blogUrl').value = tabs[0].url;
     }
@@ -74,14 +74,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.getElementById('btnSignIn').addEventListener('click', () => {
-  chrome.tabs.create({ url: `${API}/?ext_signin=1` });
+  browser.tabs.create({ url: `${API}/?ext_signin=1` });
 });
 
 document.getElementById('btnSignOut').addEventListener('click', () => {
-  chrome.storage.local.remove('authSession', showSignedOutState);
+  browser.storage.local.remove('authSession', showSignedOutState);
 });
 
-chrome.storage.onChanged.addListener((changes, area) => {
+browser.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.authSession && changes.authSession.newValue) {
     showSignedInState(changes.authSession.newValue.email);
   }
