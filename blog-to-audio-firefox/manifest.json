@@ -6,7 +6,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "text-to-audio@text-to-audio-online.vercel.app",
-      "strict_min_version": "109.0"
+      "strict_min_version": "128.0"
     }
   },
   "permissions": ["activeTab", "tabs", "storage"],
@@ -38,7 +38,7 @@
     "128": "icons/icon128.png"
   },
   "data_collection_permissions": {
-    "collects_data": true,
-    "data_collected": ["email", "authentication_info"]
+    "required": [],
+    "optional": []
   }
 }
