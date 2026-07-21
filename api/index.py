@@ -839,6 +839,8 @@ def build_html():
     supabaseClient.auth.getSession().then(({{ data }}) => {{
         applyAuthState(data.session);
         maybeSendSessionToExtension(data.session);
+    }}).catch(() => {{
+        applyAuthState(null);
     }});
     supabaseClient.auth.onAuthStateChange((_event, session) => {{
         applyAuthState(session);
