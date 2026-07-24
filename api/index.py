@@ -1212,9 +1212,9 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
         .feature-box {{ width: 100%; max-width: 640px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.75rem 2rem; }}
         .feature-section h2 {{ font-size: 1.2rem; font-weight: 700; color: #818cf8; margin-bottom: 0.85rem; }}
         .feature-section p {{ color: #94a3b8; font-size: 0.95rem; line-height: 1.75; }}
-        .faq-wrap {{ width: 100%; max-width: 640px; padding: 3rem 2rem 4rem; }}
-        .faq-wrap h2 {{ font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: #818cf8; }}
-        .faq-item {{ margin-bottom: 0.5rem; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }}
+        .faq-wrap {{ width: 100%; display: flex; flex-direction: column; align-items: center; padding: 3rem 2rem 4rem; }}
+        .faq-wrap h2 {{ width: 100%; max-width: 640px; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: #818cf8; }}
+        .faq-item {{ width: 100%; max-width: 640px; margin-bottom: 0.5rem; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }}
         .faq-q {{ width: 100%; padding: 0.85rem 1rem; background: #1e293b; border: none; color: #e2e8f0; font-size: 0.9rem; font-weight: 500; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; }}
         .faq-q:hover {{ background: #253046; }}
         .faq-q::after {{ content: '+'; font-size: 1.1rem; color: #818cf8; flex-shrink: 0; margin-left: 0.75rem; }}
