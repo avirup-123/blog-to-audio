@@ -754,6 +754,7 @@ def build_html():
         <div style="max-width:640px; margin:0 auto;">
             <p style="font-size:0.78rem; color:#475569; margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.05em;">Supported Platforms</p>
             <a href="/convert/medium-to-audio" style="color:#818cf8; font-size:0.85rem; text-decoration:none; margin:0 0.75rem;">Medium.com</a>
+            <a href="/convert/listen-to-wikipedia-articles" style="color:#818cf8; font-size:0.85rem; text-decoration:none; margin:0 0.75rem;">Wikipedia</a>
         </div>
     </footer>
     <script>
@@ -1040,6 +1041,12 @@ def sitemap():
   </url>
   <url>
     <loc>https://text-to-audio-online.vercel.app/convert/medium-to-audio</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://text-to-audio-online.vercel.app/convert/listen-to-wikipedia-articles</loc>
     <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -1437,6 +1444,64 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
     </script>
 </body>
 </html>'''
+
+
+@app.route("/convert/listen-to-wikipedia-articles")
+def listen_to_wikipedia():
+    html = build_platform_page(
+        slug="listen-to-wikipedia-articles",
+        platform="Wikipedia",
+        keyword="Listen to your Wikipedia Articles",
+        url_placeholder="https://en.wikipedia.org/wiki/SpaceX",
+        feat1_title="Study Smarter with Wikipedia Audio",
+        feat1_body=(
+            "Wikipedia articles are packed with dense information that can take hours to read through carefully. "
+            "By converting them to audio, students and lifelong learners can absorb complex topics during commutes, "
+            "workouts, or any moment when a screen isn't available. Whether you're preparing for an exam, "
+            "researching a topic for work, or simply curious about the world, listening to Wikipedia lets you "
+            "learn continuously without carving out dedicated reading time. Turn passive time into productive "
+            "learning sessions with one click."
+        ),
+        feat2_title="Download Wikipedia as MP3",
+        feat2_body=(
+            "Every conversion produces a high-quality MP3 file you can save directly to your phone or computer — "
+            "no internet connection needed to play it back. This is ideal for researchers who need to revisit "
+            "complex topics multiple times, travelers on long flights, or anyone in areas with unreliable connectivity. "
+            "The audio is generated using Microsoft Edge neural voices, producing natural speech that's comfortable "
+            "to listen to for extended periods, even for lengthy reference articles."
+        ),
+        faqs=[
+            (
+                "How do I convert a Wikipedia link to audio?",
+                "Copy the full URL of any Wikipedia article (e.g. https://en.wikipedia.org/wiki/SpaceX) and paste "
+                "it into the 'From URL' tab. Click 'Convert to Audio' and the tool will fetch the article, strip "
+                "navigation and reference sections, and generate a clean MP3 in seconds. You can play it directly "
+                "in your browser or download it to your device."
+            ),
+            (
+                "Can I download the Wikipedia audio for offline study?",
+                "Yes. After every conversion you'll see a 'Download MP3' link below the audio player. Click it to "
+                "save the file locally. The downloaded file works on any device — iPhone, Android, Mac, or Windows — "
+                "and can be imported into any podcast or music app that accepts MP3 files. No account required "
+                "after sign-in, and no expiry on the file."
+            ),
+            (
+                "Does it support Wikipedia in different languages?",
+                "Yes. Wikipedia articles from any language edition are supported — Spanish (es.wikipedia.org), "
+                "French (fr.wikipedia.org), German (de.wikipedia.org), Hindi, Japanese, and more. The tool fetches "
+                "the article text in its original language. You can then select a matching voice from the voice "
+                "selector for the best listening experience."
+            ),
+            (
+                "Is there a limit to how long the Wikipedia article can be?",
+                "Our tool handles even the longest Wikipedia entries. For articles exceeding 3,000 words, "
+                "our system automatically condenses the content to preserve all key facts and sections while "
+                "keeping the audio to a comfortable length. You'll always get a complete, informative summary "
+                "rather than a cut-off mid-article."
+            ),
+        ],
+    )
+    return Response(html, content_type="text/html; charset=utf-8")
 
 
 @app.route("/convert/medium-to-audio")
