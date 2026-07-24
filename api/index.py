@@ -750,6 +750,12 @@ def build_html():
             <div class="faq-item"><button class="faq-q">Do I need to sign in to use this?</button><div class="faq-a">Yes, a free Google sign-in is required on both the website and the Chrome extension. This lets us track your daily usage and keep your conversion history.</div></div>
         </div>
     </div></div></div>
+    <footer style="width:100%; border-top:1px solid #1e293b; padding:1.5rem 2rem; text-align:center; margin-top:auto;">
+        <div style="max-width:640px; margin:0 auto;">
+            <p style="font-size:0.78rem; color:#475569; margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.05em;">Supported Platforms</p>
+            <a href="/convert/medium-to-audio" style="color:#818cf8; font-size:0.85rem; text-decoration:none; margin:0 0.75rem;">Medium.com</a>
+        </div>
+    </footer>
     <script>
     const SUPABASE_URL = '{os.getenv("SUPABASE_URL", "").strip()}';
     const SUPABASE_ANON_KEY = '{os.getenv("SUPABASE_ANON_KEY", "").strip()}';
@@ -1032,6 +1038,12 @@ def sitemap():
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://text-to-audio-online.vercel.app/convert/medium-to-audio</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>'''
     return Response(xml, content_type="application/xml; charset=utf-8")
 
@@ -1093,6 +1105,390 @@ a { color: #818cf8; }
 <h2>Contact</h2>
 <p>For questions about this privacy policy, contact us at <a href="mailto:avirupsarker1999@gmail.com">avirupsarker1999@gmail.com</a>.</p>
 </body></html>'''
+    return Response(html, content_type="text/html; charset=utf-8")
+
+
+def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, feat1_body, feat2_title, feat2_body, faqs):
+    canonical_url = f"https://text-to-audio-online.vercel.app/convert/{slug}"
+    subtitle = f"Turn any {platform} post into a natural-sounding MP3 file for offline listening."
+    supabase_url_val = os.getenv("SUPABASE_URL", "").strip()
+    supabase_anon_key_val = os.getenv("SUPABASE_ANON_KEY", "").strip()
+    faq_html = "".join(
+        f'<div class="faq-item"><button class="faq-q">{q}</button><div class="faq-a">{a}</div></div>\n'
+        for q, a in faqs
+    )
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{keyword} | Text to Audio Online</title>
+    <meta name="description" content="{subtitle} Free. 3 natural AI voices. No signup required.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{canonical_url}" />
+    <meta property="og:title" content="{keyword}">
+    <meta property="og:description" content="{subtitle}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{canonical_url}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{keyword}">
+    <meta name="twitter:description" content="{subtitle}">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7SJW1JQCM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-R7SJW1JQCM');
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0; }}
+        .topbar {{ position: fixed; top: 0; left: 0; right: 0; height: 56px; display: none; align-items: center; justify-content: space-between; padding: 0 1.5rem; background: #0f172a; border-bottom: 1px solid #1e293b; z-index: 10; }}
+        .topbar.show {{ display: flex; }}
+        .topbar-left {{ font-size: 0.9rem; font-weight: 700; color: #e2e8f0; text-decoration: none; }}
+        .topbar-right {{ display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #94a3b8; }}
+        .btn-signout {{ background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 0.4rem 0.85rem; font-size: 0.82rem; cursor: pointer; font-family: inherit; }}
+        .btn-signout:hover {{ background: #253046; }}
+        .signin-screen {{ display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem; }}
+        .signin-screen.show {{ display: flex; }}
+        .signin-screen h2 {{ font-size: 1.5rem; margin-bottom: 0.5rem; }}
+        .signin-screen p {{ color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }}
+        .btn-google {{ display: flex; align-items: center; gap: 0.6rem; background: #fff; color: #1f1f1f; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit; }}
+        .btn-google:hover {{ background: #f1f1f1; }}
+        .app-content {{ display: none; width: 100%; flex-direction: column; align-items: center; }}
+        .app-content.show {{ display: flex; }}
+        .hero {{ display: flex; align-items: flex-start; justify-content: center; padding: 80px 2rem 2rem; width: 100%; }}
+        .container {{ width: 100%; max-width: 640px; }}
+        h1 {{ font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }}
+        .subtitle {{ color: #94a3b8; margin-bottom: 2rem; font-size: 0.95rem; }}
+        .tabs {{ display: flex; margin-bottom: 1.5rem; border-bottom: 2px solid #1e293b; }}
+        .tab {{ padding: 0.75rem 1.5rem; cursor: pointer; color: #94a3b8; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; font-size: 0.95rem; font-family: inherit; }}
+        .tab:hover {{ color: #e2e8f0; }}
+        .tab.active {{ color: #818cf8; border-bottom-color: #818cf8; }}
+        .panel {{ display: none; }}
+        .panel.active {{ display: block; }}
+        label {{ display: block; font-size: 0.85rem; font-weight: 500; color: #94a3b8; margin-bottom: 0.4rem; }}
+        input[type="text"], textarea {{ width: 100%; padding: 0.75rem 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 0.95rem; font-family: inherit; outline: none; transition: border-color 0.2s; }}
+        input[type="text"]:focus, textarea:focus {{ border-color: #818cf8; }}
+        textarea {{ min-height: 200px; resize: vertical; }}
+        .field {{ margin-bottom: 1rem; }}
+        select {{ width: 100%; padding: 0.75rem 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 0.95rem; font-family: inherit; outline: none; transition: border-color 0.2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }}
+        select:focus {{ border-color: #818cf8; }}
+        .btn {{ width: 100%; padding: 0.85rem; background: #818cf8; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; font-family: inherit; }}
+        .btn:hover {{ background: #6366f1; }}
+        .btn:disabled {{ background: #475569; cursor: not-allowed; }}
+        .result {{ margin-top: 1.5rem; padding: 1.25rem; background: #1e293b; border-radius: 8px; display: none; }}
+        .result.show {{ display: block; }}
+        .result h3 {{ font-size: 1rem; margin-bottom: 0.75rem; color: #818cf8; }}
+        .result-row {{ display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.9rem; }}
+        .result-row span:first-child {{ color: #94a3b8; }}
+        .result audio {{ width: 100%; margin-top: 1rem; }}
+        .download-link {{ display: inline-block; margin-top: 0.75rem; color: #818cf8; text-decoration: none; font-weight: 500; font-size: 0.9rem; }}
+        .download-link:hover {{ text-decoration: underline; }}
+        .error-msg {{ margin-top: 1rem; padding: 0.75rem 1rem; background: #7f1d1d; border-radius: 8px; font-size: 0.9rem; display: none; }}
+        .error-msg.show {{ display: block; }}
+        .history-table {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; }}
+        .history-table th {{ text-align: left; color: #94a3b8; padding: 0.5rem; border-bottom: 1px solid #334155; font-weight: 500; }}
+        .history-table td {{ padding: 0.5rem; border-bottom: 1px solid #1e293b; color: #e2e8f0; }}
+        .feature-section {{ width: 100%; max-width: 640px; padding: 3rem 2rem; }}
+        .feature-section + .feature-section {{ border-top: 1px solid #1e293b; }}
+        .feature-section h2 {{ font-size: 1.2rem; font-weight: 700; color: #818cf8; margin-bottom: 1rem; }}
+        .feature-section p {{ color: #94a3b8; font-size: 0.95rem; line-height: 1.75; }}
+        .faq-wrap {{ width: 100%; max-width: 640px; padding: 3rem 2rem 4rem; }}
+        .faq-wrap h2 {{ font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: #818cf8; }}
+        .faq-item {{ margin-bottom: 0.5rem; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }}
+        .faq-q {{ width: 100%; padding: 0.85rem 1rem; background: #1e293b; border: none; color: #e2e8f0; font-size: 0.9rem; font-weight: 500; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; }}
+        .faq-q:hover {{ background: #253046; }}
+        .faq-q::after {{ content: '+'; font-size: 1.1rem; color: #818cf8; flex-shrink: 0; margin-left: 0.75rem; }}
+        .faq-item.open .faq-q::after {{ content: '\\2212'; }}
+        .faq-a {{ max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; background: #162032; font-size: 0.85rem; color: #94a3b8; line-height: 1.6; padding: 0 1rem; }}
+        .faq-item.open .faq-a {{ max-height: 300px; padding: 0.75rem 1rem; }}
+        .spinner {{ display: inline-block; width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 0.5rem; }}
+        @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+        .site-footer {{ width: 100%; border-top: 1px solid #1e293b; padding: 1.5rem 2rem; text-align: center; margin-top: auto; }}
+        .site-footer a {{ color: #818cf8; text-decoration: none; font-size: 0.9rem; }}
+        .site-footer a:hover {{ text-decoration: underline; }}
+        .site-footer p {{ color: #475569; font-size: 0.8rem; margin-top: 0.5rem; }}
+        @media (max-width: 600px) {{
+            .hero {{ padding: 70px 1rem 1.5rem; }}
+            h1 {{ font-size: 1.4rem; }}
+            .subtitle {{ font-size: 0.85rem; margin-bottom: 1.5rem; }}
+            .tab {{ padding: 0.65rem 1rem; font-size: 0.85rem; }}
+            input[type="text"], textarea, select {{ font-size: 16px; padding: 0.7rem 0.85rem; }}
+            .btn {{ padding: 0.9rem; font-size: 0.95rem; }}
+            .feature-section, .faq-wrap {{ padding-left: 1rem; padding-right: 1rem; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="topbar" id="topbar">
+        <a href="/" class="topbar-left">Text to Audio Online</a>
+        <div class="topbar-right">
+            <span id="user-email"></span>
+            <button class="btn-signout" id="btn-signout">Sign out</button>
+        </div>
+    </div>
+    <div class="signin-screen" id="signin-screen">
+        <h2>{keyword}</h2>
+        <p>Sign in with Google to start converting {platform} posts to audio</p>
+        <button class="btn-google" id="btn-google-signin">Sign in with Google</button>
+    </div>
+    <div class="app-content" id="app-content">
+        <div class="hero"><div class="container">
+            <h1>{keyword}</h1>
+            <p class="subtitle">{subtitle}</p>
+            <div class="tabs">
+                <button class="tab active" data-tab="url">From URL</button>
+                <button class="tab" data-tab="manual">Paste Text</button>
+                <button class="tab" data-tab="history">History</button>
+            </div>
+            <div class="field">
+                <label>Voice</label>
+                <select id="voice-select">
+                    <option value="en-US-JennyNeural">Jenny (US Female)</option>
+                    <option value="en-US-GuyNeural">Guy (US Male)</option>
+                    <option value="en-GB-SoniaNeural">Sonia (UK Female)</option>
+                </select>
+            </div>
+            <div id="panel-url" class="panel active">
+                <div class="field">
+                    <label>Content URL</label>
+                    <input type="text" id="url-input" placeholder="{url_placeholder}">
+                </div>
+                <button class="btn" id="btn-url">Convert to Audio</button>
+            </div>
+            <div id="panel-manual" class="panel">
+                <div class="field">
+                    <label>Paste your text</label>
+                    <textarea id="text-input" placeholder="Paste article text here..."></textarea>
+                </div>
+                <div class="field">
+                    <label>Filename slug</label>
+                    <input type="text" id="slug-input" placeholder="my-medium-article">
+                </div>
+                <button class="btn" id="btn-manual">Convert to Audio</button>
+            </div>
+            <div id="panel-history" class="panel">
+                <table class="history-table">
+                    <thead><tr><th>Date</th><th>Source</th><th>Language</th><th>Voice</th><th>Duration</th></tr></thead>
+                    <tbody id="history-tbody"></tbody>
+                </table>
+                <p id="history-empty" style="display:none; color:#94a3b8; font-size:0.9rem;">No conversions yet.</p>
+            </div>
+            <div class="error-msg" id="error"></div>
+            <div class="result" id="result">
+                <h3>Conversion Complete</h3>
+                <div class="result-row"><span>Source</span><span id="r-source"></span></div>
+                <div class="result-row"><span>Word count</span><span id="r-wc"></span></div>
+                <div class="result-row"><span>Condensed</span><span id="r-condensed"></span></div>
+                <div class="result-row" id="r-condensed-wc-row" style="display:none"><span>Final word count</span><span id="r-condensed-wc"></span></div>
+                <div class="result-row"><span>Duration</span><span id="r-duration"></span></div>
+                <audio id="r-audio" controls></audio>
+                <a class="download-link" id="r-download" href="#" download>Download MP3</a>
+            </div>
+        </div></div>
+        <div class="feature-section">
+            <h2>{feat1_title}</h2>
+            <p>{feat1_body}</p>
+        </div>
+        <div class="feature-section">
+            <h2>{feat2_title}</h2>
+            <p>{feat2_body}</p>
+        </div>
+        <div class="faq-wrap">
+            <h2>Frequently Asked Questions</h2>
+            {faq_html}
+        </div>
+    </div>
+    <footer class="site-footer">
+        <a href="/">← Back to Text to Audio Online</a>
+        <p>© 2026 Text to Audio Online</p>
+    </footer>
+    <script>
+    const SUPABASE_URL = '{supabase_url_val}';
+    const SUPABASE_ANON_KEY = '{supabase_anon_key_val}';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentSession = null;
+
+    function applyAuthState(session) {{
+        currentSession = session;
+        const topbar = document.getElementById('topbar');
+        const signinScreen = document.getElementById('signin-screen');
+        const appContent = document.getElementById('app-content');
+        if (session) {{
+            topbar.classList.add('show');
+            signinScreen.classList.remove('show');
+            appContent.classList.add('show');
+            document.getElementById('user-email').textContent = session.user.email;
+        }} else {{
+            topbar.classList.remove('show');
+            signinScreen.classList.add('show');
+            appContent.classList.remove('show');
+        }}
+    }}
+
+    async function loadHistory() {{
+        if (!currentSession) return;
+        const {{ data, error }} = await supabaseClient.from('conversions').select('*').order('created_at', {{ ascending: false }});
+        const tbody = document.getElementById('history-tbody');
+        const empty = document.getElementById('history-empty');
+        tbody.innerHTML = '';
+        if (error || !data || data.length === 0) {{ empty.style.display = 'block'; return; }}
+        empty.style.display = 'none';
+        for (const row of data) {{
+            const tr = document.createElement('tr');
+            for (const text of [new Date(row.created_at).toLocaleString(), row.source_snippet, row.language, row.voice, row.estimated_duration]) {{
+                const td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+            }}
+            tbody.appendChild(tr);
+        }}
+    }}
+
+    supabaseClient.auth.getSession().then(({{ data }}) => {{
+        applyAuthState(data.session);
+    }}).catch(() => {{ applyAuthState(null); }});
+    supabaseClient.auth.onAuthStateChange((_event, session) => {{
+        applyAuthState(session);
+        if (_event === 'SIGNED_IN') gtag('event', 'sign_in');
+    }});
+    document.getElementById('btn-google-signin').addEventListener('click', () => {{
+        const redir = window.location.origin + window.location.pathname;
+        supabaseClient.auth.signInWithOAuth({{ provider: 'google', options: {{ redirectTo: redir }} }});
+    }});
+    document.getElementById('btn-signout').addEventListener('click', () => {{ supabaseClient.auth.signOut(); }});
+
+    document.querySelectorAll('.tab').forEach(tab => {{
+        tab.addEventListener('click', () => {{
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+            if (tab.dataset.tab === 'history') loadHistory();
+        }});
+    }});
+
+    function showError(msg) {{
+        const el = document.getElementById('error');
+        el.textContent = msg; el.classList.add('show');
+        document.getElementById('result').classList.remove('show');
+    }}
+    function showResult(data) {{
+        document.getElementById('error').classList.remove('show');
+        document.getElementById('r-source').textContent = data.input_source;
+        document.getElementById('r-wc').textContent = data.word_count_cleaned;
+        document.getElementById('r-condensed').textContent = data.condensation_applied ? 'Yes' : 'No';
+        const cwcRow = document.getElementById('r-condensed-wc-row');
+        if (data.condensation_applied) {{ cwcRow.style.display = 'flex'; document.getElementById('r-condensed-wc').textContent = data.word_count_final; }}
+        else {{ cwcRow.style.display = 'none'; }}
+        document.getElementById('r-duration').textContent = data.estimated_duration;
+        const bytes = atob(data.audio_base64);
+        const arr = new Uint8Array(bytes.length);
+        for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+        const blob = new Blob([arr], {{ type: 'audio/mpeg' }});
+        const audioUrl = URL.createObjectURL(blob);
+        document.getElementById('r-audio').src = audioUrl;
+        const dl = document.getElementById('r-download');
+        dl.href = audioUrl; dl.download = data.filename;
+        document.getElementById('result').classList.add('show');
+        loadHistory();
+    }}
+    async function doConvert(body, btn) {{
+        document.getElementById('result').classList.remove('show');
+        document.getElementById('error').classList.remove('show');
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Converting...';
+        try {{
+            const resp = await fetch('/convert', {{
+                method: 'POST',
+                headers: {{ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (currentSession ? currentSession.access_token : '') }},
+                body: JSON.stringify(body),
+            }});
+            if (resp.status === 401) {{ applyAuthState(null); showError('Please sign in again'); return; }}
+            const data = await resp.json();
+            if (!resp.ok) showError(data.error || 'Something went wrong');
+            else showResult(data);
+        }} catch (e) {{ showError('Network error: ' + e.message); }}
+        finally {{ btn.disabled = false; btn.innerHTML = orig; }}
+    }}
+    document.getElementById('btn-url').addEventListener('click', () => {{
+        const url = document.getElementById('url-input').value.trim();
+        if (!url) return showError('Please enter a URL');
+        doConvert({{ input_type: 'url', url, voice: document.getElementById('voice-select').value, lang: 'en' }}, document.getElementById('btn-url'));
+    }});
+    document.getElementById('btn-manual').addEventListener('click', () => {{
+        const text = document.getElementById('text-input').value.trim();
+        const slug = document.getElementById('slug-input').value.trim();
+        if (!text) return showError('Please paste some text');
+        if (!slug) return showError('Please enter a filename slug');
+        doConvert({{ input_type: 'manual', text, slug, voice: document.getElementById('voice-select').value, lang: 'en' }}, document.getElementById('btn-manual'));
+    }});
+    document.querySelectorAll('.faq-q').forEach(btn => {{
+        btn.addEventListener('click', () => {{
+            const item = btn.parentElement;
+            const wasOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+            if (!wasOpen) item.classList.add('open');
+        }});
+    }});
+    </script>
+</body>
+</html>'''
+
+
+@app.route("/convert/medium-to-audio")
+def medium_to_audio():
+    html = build_platform_page(
+        slug="medium-to-audio",
+        platform="Medium.com",
+        keyword="Medium article to Audio converter online",
+        url_placeholder="https://medium.com/example-post",
+        feat1_title="Maximize Your Productivity with Medium.com Audio",
+        feat1_body=(
+            "Medium is home to some of the most insightful long-form writing on the internet, but reading "
+            "every article you save is a challenge when your screen time is already maxed out. By converting "
+            "Medium articles to audio, you can absorb new ideas while commuting, exercising, cooking, or doing "
+            "anything else that keeps your hands busy. Turn your reading backlog into a personal podcast "
+            "and make the most of every minute in your day."
+        ),
+        feat2_title="High-Quality MP3 Downloads for Offline Use",
+        feat2_body=(
+            "Once you convert a Medium article, you get a downloadable MP3 file that lives on your device "
+            "permanently — no internet required to play it back. This makes it ideal for flights, subway "
+            "commutes, or anywhere your connection is unreliable. The audio is generated using Microsoft "
+            "Edge neural voices, which produce natural, human-like speech that's easy to listen to for "
+            "extended periods without fatigue."
+        ),
+        faqs=[
+            (
+                "How do I turn a Medium article link into audio?",
+                "Paste the full Medium article URL (e.g. https://medium.com/@author/article-title) into the "
+                "'From URL' tab and click 'Convert to Audio'. The tool fetches the article text, removes ads "
+                "and navigation, and converts it to MP3 in seconds. You can then play it directly or download it."
+            ),
+            (
+                "Can I download the MP3 to my phone or computer?",
+                "Yes. After conversion completes, click the 'Download MP3' link to save the file locally. "
+                "The file works on any device — iPhone, Android, Mac, Windows — and can be transferred to "
+                "any music or podcast app that accepts MP3 files."
+            ),
+            (
+                "Does it support different voices for Medium articles?",
+                "Yes. You can choose from three neural AI voices before converting: Jenny (US Female), "
+                "Guy (US Male), and Sonia (UK Female). Each voice has a distinct tone and accent, so pick "
+                "whichever sounds most natural to you for the type of content you're reading."
+            ),
+            (
+                "Is it free to convert Medium posts?",
+                "Yes. You get 10 free conversions per day after signing in with Google. The daily limit "
+                "resets at midnight UTC. There are no paywalls or credit cards required — just sign in "
+                "and start converting."
+            ),
+        ],
+    )
     return Response(html, content_type="text/html; charset=utf-8")
 
 
