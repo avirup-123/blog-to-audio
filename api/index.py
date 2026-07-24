@@ -1208,7 +1208,7 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
         .history-table {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; }}
         .history-table th {{ text-align: left; color: #94a3b8; padding: 0.5rem; border-bottom: 1px solid #334155; font-weight: 500; }}
         .history-table td {{ padding: 0.5rem; border-bottom: 1px solid #1e293b; color: #e2e8f0; }}
-        .feature-section {{ width: 100%; max-width: 640px; padding: 2rem; }}
+        .feature-section {{ width: 100%; max-width: 640px; padding: 2rem 0; }}
         .feature-box {{ background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.75rem 2rem; }}
         .feature-section h2 {{ font-size: 1.2rem; font-weight: 700; color: #818cf8; margin-bottom: 0.85rem; }}
         .feature-section p {{ color: #94a3b8; font-size: 0.95rem; line-height: 1.75; }}
