@@ -617,30 +617,31 @@ def build_html():
             position: fixed; top: 0; left: 0; right: 0; height: 56px;
             display: flex; align-items: center; justify-content: flex-end;
             padding: 0 1.5rem; background: #0f172a; border-bottom: 1px solid #1e293b;
-            z-index: 10; display: none;
+            z-index: 10;
         }}
-        .topbar.show {{ display: flex; }}
         .topbar-user {{ display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #94a3b8; }}
         .btn-signout {{
             background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px;
             padding: 0.4rem 0.85rem; font-size: 0.82rem; cursor: pointer; font-family: inherit;
         }}
         .btn-signout:hover {{ background: #253046; }}
-        .signin-screen {{
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 60vh; text-align: center; padding: 2rem;
+        .btn-topbar-signin {{
+            background: transparent; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px;
+            padding: 0.4rem 0.85rem; font-size: 0.82rem; cursor: pointer; font-family: inherit;
         }}
-        .signin-screen.show {{ display: flex; }}
-        .signin-screen h1 {{ font-size: 1.5rem; margin-bottom: 0.5rem; }}
-        .signin-screen p {{ color: #94a3b8; margin-bottom: 1.5rem; }}
+        .btn-topbar-signin:hover {{ background: #1e293b; }}
         .btn-google {{
             display: flex; align-items: center; gap: 0.6rem; background: #fff; color: #1f1f1f;
             border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-size: 0.95rem;
-            font-weight: 500; cursor: pointer; font-family: inherit;
+            font-weight: 500; cursor: pointer; font-family: inherit; margin: 0 auto;
         }}
         .btn-google:hover {{ background: #f1f1f1; }}
-        .app-content {{ display: none; }}
-        .app-content.show {{ display: block; }}
+        .signin-prompt {{
+            margin-top: 1rem; padding: 1.25rem 1.5rem; background: #1e293b;
+            border: 1px solid #334155; border-radius: 8px; text-align: center; display: none;
+        }}
+        .signin-prompt.show {{ display: block; }}
+        .signin-prompt p {{ color: #94a3b8; margin-bottom: 0.75rem; font-size: 0.9rem; }}
         @media (max-width: 600px) {{
             .hero {{ padding: 6vh 1rem 1.5rem; }}
             .container {{ max-width: 100%; }}
@@ -661,15 +662,11 @@ def build_html():
 </head>
 <body>
     <div class="topbar" id="topbar">
-        <div class="topbar-user">
+        <div class="topbar-user" id="topbar-user" style="display:none">
             <span id="user-email"></span>
             <button class="btn-signout" id="btn-signout">Sign out</button>
         </div>
-    </div>
-    <div class="signin-screen" id="signin-screen">
-        <h1>Text to Audio Online</h1>
-        <p>Sign in with Google to start converting blog posts to audio</p>
-        <button class="btn-google" id="btn-google-signin">Sign in with Google</button>
+        <button class="btn-topbar-signin" id="btn-topbar-signin">Sign in</button>
     </div>
     <div class="app-content" id="app-content">
     <div class="hero"><div class="container">
@@ -718,6 +715,10 @@ def build_html():
             <p id="history-empty" style="display:none; color:#94a3b8; font-size:0.9rem;">No conversions yet.</p>
         </div>
         <div class="error-msg" id="error"></div>
+        <div class="signin-prompt" id="signin-prompt">
+            <p>Sign in to convert, it's free — 10 conversions per day</p>
+            <button class="btn-google" id="btn-inline-signin">Sign in with Google</button>
+        </div>
         <div class="result" id="result">
             <h3 id="t-result-title">Conversion Complete</h3>
             <div class="result-row"><span id="t-result-source">Source</span><span id="r-source"></span></div>
@@ -765,19 +766,22 @@ def build_html():
 
     function applyAuthState(session) {{
         currentSession = session;
-        const topbar = document.getElementById('topbar');
-        const signinScreen = document.getElementById('signin-screen');
-        const appContent = document.getElementById('app-content');
+        const topbarUser = document.getElementById('topbar-user');
+        const topbarSignin = document.getElementById('btn-topbar-signin');
         if (session) {{
-            topbar.classList.add('show');
-            signinScreen.classList.remove('show');
-            appContent.classList.add('show');
+            topbarUser.style.display = 'flex';
+            topbarSignin.style.display = 'none';
             document.getElementById('user-email').textContent = session.user.email;
+            document.getElementById('signin-prompt').classList.remove('show');
         }} else {{
-            topbar.classList.remove('show');
-            signinScreen.classList.add('show');
-            appContent.classList.remove('show');
+            topbarUser.style.display = 'none';
+            topbarSignin.style.display = 'block';
         }}
+    }}
+    function showSignInPrompt() {{
+        document.getElementById('result').classList.remove('show');
+        document.getElementById('error').classList.remove('show');
+        document.getElementById('signin-prompt').classList.add('show');
     }}
 
     async function loadHistory() {{
@@ -857,10 +861,12 @@ def build_html():
         }}
     }});
 
-    document.getElementById('btn-google-signin').addEventListener('click', () => {{
+    function doGoogleSignIn() {{
         const redir = window.location.origin + window.location.pathname + window.location.search;
         supabaseClient.auth.signInWithOAuth({{ provider: 'google', options: {{ redirectTo: redir }} }});
-    }});
+    }}
+    document.getElementById('btn-topbar-signin').addEventListener('click', doGoogleSignIn);
+    document.getElementById('btn-inline-signin').addEventListener('click', doGoogleSignIn);
     document.getElementById('btn-signout').addEventListener('click', () => {{
         supabaseClient.auth.signOut();
     }});
@@ -929,7 +935,11 @@ def build_html():
             tab.classList.add('active');
             document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
             hideResults();
-            if (tab.dataset.tab === 'history') loadHistory();
+            document.getElementById('signin-prompt').classList.remove('show');
+            if (tab.dataset.tab === 'history') {{
+                if (!currentSession) {{ showSignInPrompt(); return; }}
+                loadHistory();
+            }}
         }});
     }});
 
@@ -970,6 +980,7 @@ def build_html():
         return new Blob([arr], {{ type: mime }});
     }}
     async function convert(body, btn) {{
+        if (!currentSession) {{ showSignInPrompt(); return; }}
         hideResults();
         const L = LANGS[currentLang];
         const originalText = btn.innerHTML;
@@ -1151,20 +1162,19 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0; }}
-        .topbar {{ position: fixed; top: 0; left: 0; right: 0; height: 56px; display: none; align-items: center; justify-content: space-between; padding: 0 1.5rem; background: #0f172a; border-bottom: 1px solid #1e293b; z-index: 10; }}
-        .topbar.show {{ display: flex; }}
+        .topbar {{ position: fixed; top: 0; left: 0; right: 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; background: #0f172a; border-bottom: 1px solid #1e293b; z-index: 10; }}
         .topbar-left {{ font-size: 0.9rem; font-weight: 700; color: #e2e8f0; text-decoration: none; }}
         .topbar-right {{ display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #94a3b8; }}
         .btn-signout {{ background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 0.4rem 0.85rem; font-size: 0.82rem; cursor: pointer; font-family: inherit; }}
         .btn-signout:hover {{ background: #253046; }}
-        .signin-screen {{ display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem; }}
-        .signin-screen.show {{ display: flex; }}
-        .signin-screen h2 {{ font-size: 1.5rem; margin-bottom: 0.5rem; }}
-        .signin-screen p {{ color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }}
-        .btn-google {{ display: flex; align-items: center; gap: 0.6rem; background: #fff; color: #1f1f1f; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit; }}
+        .btn-topbar-signin {{ background: transparent; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 0.4rem 0.85rem; font-size: 0.82rem; cursor: pointer; font-family: inherit; }}
+        .btn-topbar-signin:hover {{ background: #1e293b; }}
+        .btn-google {{ display: flex; align-items: center; gap: 0.6rem; background: #fff; color: #1f1f1f; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit; margin: 0 auto; }}
         .btn-google:hover {{ background: #f1f1f1; }}
-        .app-content {{ display: none; width: 100%; flex-direction: column; align-items: center; }}
-        .app-content.show {{ display: flex; }}
+        .signin-prompt {{ margin-top: 1rem; padding: 1.25rem 1.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; text-align: center; display: none; }}
+        .signin-prompt.show {{ display: block; }}
+        .signin-prompt p {{ color: #94a3b8; margin-bottom: 0.75rem; font-size: 0.9rem; }}
+        .app-content {{ display: flex; width: 100%; flex-direction: column; align-items: center; }}
         .hero {{ display: flex; align-items: flex-start; justify-content: center; padding: 80px 2rem 2rem; width: 100%; }}
         .container {{ width: 100%; max-width: 640px; }}
         h1 {{ font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }}
@@ -1198,9 +1208,9 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
         .history-table {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; }}
         .history-table th {{ text-align: left; color: #94a3b8; padding: 0.5rem; border-bottom: 1px solid #334155; font-weight: 500; }}
         .history-table td {{ padding: 0.5rem; border-bottom: 1px solid #1e293b; color: #e2e8f0; }}
-        .feature-section {{ width: 100%; max-width: 640px; padding: 3rem 2rem; }}
-        .feature-section + .feature-section {{ border-top: 1px solid #1e293b; }}
-        .feature-section h2 {{ font-size: 1.2rem; font-weight: 700; color: #818cf8; margin-bottom: 1rem; }}
+        .feature-section {{ width: 100%; max-width: 640px; padding: 2rem; }}
+        .feature-box {{ background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.75rem 2rem; }}
+        .feature-section h2 {{ font-size: 1.2rem; font-weight: 700; color: #818cf8; margin-bottom: 0.85rem; }}
         .feature-section p {{ color: #94a3b8; font-size: 0.95rem; line-height: 1.75; }}
         .faq-wrap {{ width: 100%; max-width: 640px; padding: 3rem 2rem 4rem; }}
         .faq-wrap h2 {{ font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: #818cf8; }}
@@ -1232,14 +1242,12 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
     <div class="topbar" id="topbar">
         <a href="/" class="topbar-left">Text to Audio Online</a>
         <div class="topbar-right">
-            <span id="user-email"></span>
-            <button class="btn-signout" id="btn-signout">Sign out</button>
+            <div id="topbar-user" style="display:none; align-items:center; gap:0.75rem;">
+                <span id="user-email"></span>
+                <button class="btn-signout" id="btn-signout">Sign out</button>
+            </div>
+            <button class="btn-topbar-signin" id="btn-topbar-signin">Sign in</button>
         </div>
-    </div>
-    <div class="signin-screen" id="signin-screen">
-        <h2>{keyword}</h2>
-        <p>Sign in with Google to start converting {platform} posts to audio</p>
-        <button class="btn-google" id="btn-google-signin">Sign in with Google</button>
     </div>
     <div class="app-content" id="app-content">
         <div class="hero"><div class="container">
@@ -1284,6 +1292,10 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
                 <p id="history-empty" style="display:none; color:#94a3b8; font-size:0.9rem;">No conversions yet.</p>
             </div>
             <div class="error-msg" id="error"></div>
+            <div class="signin-prompt" id="signin-prompt">
+                <p>Sign in to convert, it's free — 10 conversions per day</p>
+                <button class="btn-google" id="btn-inline-signin">Sign in with Google</button>
+            </div>
             <div class="result" id="result">
                 <h3>Conversion Complete</h3>
                 <div class="result-row"><span>Source</span><span id="r-source"></span></div>
@@ -1296,12 +1308,16 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
             </div>
         </div></div>
         <div class="feature-section">
-            <h2>{feat1_title}</h2>
-            <p>{feat1_body}</p>
+            <div class="feature-box">
+                <h2>{feat1_title}</h2>
+                <p>{feat1_body}</p>
+            </div>
         </div>
         <div class="feature-section">
-            <h2>{feat2_title}</h2>
-            <p>{feat2_body}</p>
+            <div class="feature-box">
+                <h2>{feat2_title}</h2>
+                <p>{feat2_body}</p>
+            </div>
         </div>
         <div class="faq-wrap">
             <h2>Frequently Asked Questions</h2>
@@ -1320,19 +1336,22 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
 
     function applyAuthState(session) {{
         currentSession = session;
-        const topbar = document.getElementById('topbar');
-        const signinScreen = document.getElementById('signin-screen');
-        const appContent = document.getElementById('app-content');
+        const topbarUser = document.getElementById('topbar-user');
+        const topbarSignin = document.getElementById('btn-topbar-signin');
         if (session) {{
-            topbar.classList.add('show');
-            signinScreen.classList.remove('show');
-            appContent.classList.add('show');
+            topbarUser.style.display = 'flex';
+            topbarSignin.style.display = 'none';
             document.getElementById('user-email').textContent = session.user.email;
+            document.getElementById('signin-prompt').classList.remove('show');
         }} else {{
-            topbar.classList.remove('show');
-            signinScreen.classList.add('show');
-            appContent.classList.remove('show');
+            topbarUser.style.display = 'none';
+            topbarSignin.style.display = 'block';
         }}
+    }}
+    function showSignInPrompt() {{
+        document.getElementById('result').classList.remove('show');
+        document.getElementById('error').classList.remove('show');
+        document.getElementById('signin-prompt').classList.add('show');
     }}
 
     async function loadHistory() {{
@@ -1359,10 +1378,12 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
         applyAuthState(session);
         if (_event === 'SIGNED_IN') gtag('event', 'sign_in');
     }});
-    document.getElementById('btn-google-signin').addEventListener('click', () => {{
+    function doGoogleSignIn() {{
         const redir = window.location.origin + window.location.pathname;
         supabaseClient.auth.signInWithOAuth({{ provider: 'google', options: {{ redirectTo: redir }} }});
-    }});
+    }}
+    document.getElementById('btn-topbar-signin').addEventListener('click', doGoogleSignIn);
+    document.getElementById('btn-inline-signin').addEventListener('click', doGoogleSignIn);
     document.getElementById('btn-signout').addEventListener('click', () => {{ supabaseClient.auth.signOut(); }});
 
     document.querySelectorAll('.tab').forEach(tab => {{
@@ -1373,7 +1394,11 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
             document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
             document.getElementById('result').classList.remove('show');
             document.getElementById('error').classList.remove('show');
-            if (tab.dataset.tab === 'history') loadHistory();
+            document.getElementById('signin-prompt').classList.remove('show');
+            if (tab.dataset.tab === 'history') {{
+                if (!currentSession) {{ showSignInPrompt(); return; }}
+                loadHistory();
+            }}
         }});
     }});
 
@@ -1403,8 +1428,10 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
         loadHistory();
     }}
     async function doConvert(body, btn) {{
+        if (!currentSession) {{ showSignInPrompt(); return; }}
         document.getElementById('result').classList.remove('show');
         document.getElementById('error').classList.remove('show');
+        document.getElementById('signin-prompt').classList.remove('show');
         const orig = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span>Converting...';
@@ -1453,22 +1480,19 @@ def listen_to_wikipedia():
         platform="Wikipedia",
         keyword="Listen to your Wikipedia Articles",
         url_placeholder="https://en.wikipedia.org/wiki/SpaceX",
-        feat1_title="Study Smarter with Wikipedia Audio",
+        feat1_title="A better way to get through Wikipedia",
         feat1_body=(
-            "Wikipedia articles are packed with dense information that can take hours to read through carefully. "
-            "By converting them to audio, students and lifelong learners can absorb complex topics during commutes, "
-            "workouts, or any moment when a screen isn't available. Whether you're preparing for an exam, "
-            "researching a topic for work, or simply curious about the world, listening to Wikipedia lets you "
-            "learn continuously without carving out dedicated reading time. Turn passive time into productive "
-            "learning sessions with one click."
+            "Wikipedia articles can be long, and sitting down to read one from start to finish is not always easy. "
+            "Listening to the same article while you commute, walk, or do something around the house changes that completely. "
+            "It works especially well for students reviewing before a test, or for anyone trying to get up to speed "
+            "on a topic without setting aside time specifically for reading."
         ),
-        feat2_title="Download Wikipedia as MP3",
+        feat2_title="Save the audio and listen later, anywhere",
         feat2_body=(
-            "Every conversion produces a high-quality MP3 file you can save directly to your phone or computer — "
-            "no internet connection needed to play it back. This is ideal for researchers who need to revisit "
-            "complex topics multiple times, travelers on long flights, or anyone in areas with unreliable connectivity. "
-            "The audio is generated using Microsoft Edge neural voices, producing natural speech that's comfortable "
-            "to listen to for extended periods, even for lengthy reference articles."
+            "Each article you convert becomes an MP3 file you can download right to your device. "
+            "Once it is saved, you do not need a connection to play it back, which makes it a good fit for "
+            "flights, road trips, or places where the internet is spotty. "
+            "The voices sound clear enough that even long, detailed articles are comfortable to follow all the way through."
         ),
         faqs=[
             (
@@ -1512,21 +1536,19 @@ def medium_to_audio():
         platform="Medium.com",
         keyword="Medium article to Audio converter online",
         url_placeholder="https://medium.com/example-post",
-        feat1_title="Maximize Your Productivity with Medium.com Audio",
+        feat1_title="Listen to Medium while you do other things",
         feat1_body=(
-            "Medium is home to some of the most insightful long-form writing on the internet, but reading "
-            "every article you save is a challenge when your screen time is already maxed out. By converting "
-            "Medium articles to audio, you can absorb new ideas while commuting, exercising, cooking, or doing "
-            "anything else that keeps your hands busy. Turn your reading backlog into a personal podcast "
-            "and make the most of every minute in your day."
+            "Most people save more Medium articles than they ever read. "
+            "If your reading list keeps growing, converting articles to audio is a simple way to actually get through them. "
+            "You can listen while driving, at the gym, cooking dinner, or doing anything else where reading is not practical. "
+            "It works like a podcast, except the content is exactly what you picked, not someone else's show lineup."
         ),
-        feat2_title="High-Quality MP3 Downloads for Offline Use",
+        feat2_title="Download your audio and take it anywhere",
         feat2_body=(
-            "Once you convert a Medium article, you get a downloadable MP3 file that lives on your device "
-            "permanently — no internet required to play it back. This makes it ideal for flights, subway "
-            "commutes, or anywhere your connection is unreliable. The audio is generated using Microsoft "
-            "Edge neural voices, which produce natural, human-like speech that's easy to listen to for "
-            "extended periods without fatigue."
+            "When you convert a Medium article, you get an MP3 file you can save to your phone or laptop. "
+            "No internet needed to play it once it is downloaded. "
+            "This is handy on flights, the subway, or any place where your connection is patchy. "
+            "The voices are natural enough that even a long read is easy to get through without it feeling like a chore."
         ),
         faqs=[
             (
