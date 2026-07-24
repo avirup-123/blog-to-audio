@@ -1115,7 +1115,7 @@ a { color: #818cf8; }
     return Response(html, content_type="text/html; charset=utf-8")
 
 
-def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, feat1_body, feat2_title, feat2_body, faqs):
+def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, feat1_body, feat2_title, feat2_body, faqs, slug_placeholder="my-article"):
     canonical_url = f"https://text-to-audio-online.vercel.app/convert/{slug}"
     subtitle = f"Turn any {platform} post into a natural-sounding MP3 file for offline listening."
     supabase_url_val = os.getenv("SUPABASE_URL", "").strip()
@@ -1272,7 +1272,7 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
                 </div>
                 <div class="field">
                     <label>Filename slug</label>
-                    <input type="text" id="slug-input" placeholder="my-medium-article">
+                    <input type="text" id="slug-input" placeholder="{slug_placeholder}">
                 </div>
                 <button class="btn" id="btn-manual">Convert to Audio</button>
             </div>
@@ -1500,6 +1500,7 @@ def listen_to_wikipedia():
                 "rather than a cut-off mid-article."
             ),
         ],
+        slug_placeholder="spacex-history",
     )
     return Response(html, content_type="text/html; charset=utf-8")
 
@@ -1553,6 +1554,7 @@ def medium_to_audio():
                 "and start converting."
             ),
         ],
+        slug_placeholder="my-medium-article",
     )
     return Response(html, content_type="text/html; charset=utf-8")
 
