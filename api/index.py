@@ -1208,8 +1208,8 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
         .history-table {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; }}
         .history-table th {{ text-align: left; color: #94a3b8; padding: 0.5rem; border-bottom: 1px solid #334155; font-weight: 500; }}
         .history-table td {{ padding: 0.5rem; border-bottom: 1px solid #1e293b; color: #e2e8f0; }}
-        .feature-section {{ width: 100%; max-width: 640px; padding: 2rem 0; }}
-        .feature-box {{ background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.75rem 2rem; }}
+        .feature-section {{ width: 100%; display: flex; justify-content: center; padding: 1rem 2rem; }}
+        .feature-box {{ width: 100%; max-width: 640px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.75rem 2rem; }}
         .feature-section h2 {{ font-size: 1.2rem; font-weight: 700; color: #818cf8; margin-bottom: 0.85rem; }}
         .feature-section p {{ color: #94a3b8; font-size: 0.95rem; line-height: 1.75; }}
         .faq-wrap {{ width: 100%; max-width: 640px; padding: 3rem 2rem 4rem; }}
@@ -1234,7 +1234,8 @@ def build_platform_page(slug, platform, keyword, url_placeholder, feat1_title, f
             .tab {{ padding: 0.65rem 1rem; font-size: 0.85rem; }}
             input[type="text"], textarea, select {{ font-size: 16px; padding: 0.7rem 0.85rem; }}
             .btn {{ padding: 0.9rem; font-size: 0.95rem; }}
-            .feature-section, .faq-wrap {{ padding-left: 1rem; padding-right: 1rem; }}
+            .feature-section {{ padding-left: 1rem; padding-right: 1rem; }}
+            .faq-wrap {{ padding-left: 1rem; padding-right: 1rem; }}
         }}
     </style>
 </head>
